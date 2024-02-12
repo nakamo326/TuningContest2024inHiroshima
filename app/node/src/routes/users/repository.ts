@@ -112,7 +112,7 @@ export const getUsersByUserName = async (
 ): Promise<SearchedUser[]> => {
   const [rows] = await pool.query<RowDataPacket[]>(
     `SELECT user_id FROM user WHERE MATCH(user_name) AGAINST(? IN BOOLEAN MODE)`,
-    [`%${userName}%`]
+    [userName]
   );
   const userIds: string[] = rows.map((row) => row.user_id);
 
@@ -121,8 +121,8 @@ export const getUsersByUserName = async (
 
 export const getUsersByKana = async (kana: string): Promise<SearchedUser[]> => {
   const [rows] = await pool.query<RowDataPacket[]>(
-    `SELECT user_id FROM user WHERE kana LIKE ?`,
-    [`%${kana}%`]
+    `SELECT user_id FROM user WHERE MATCH(kana) AGAINST(? IN BOOLEAN MODE)`,
+    [kana]
   );
   const userIds: string[] = rows.map((row) => row.user_id);
 
@@ -131,8 +131,8 @@ export const getUsersByKana = async (kana: string): Promise<SearchedUser[]> => {
 
 export const getUsersByMail = async (mail: string): Promise<SearchedUser[]> => {
   const [rows] = await pool.query<RowDataPacket[]>(
-    `SELECT user_id FROM user WHERE mail LIKE ?`,
-    [`%${mail}%`]
+    `SELECT user_id FROM user WHERE MATCH(mail) AGAINST(? IN BOOLEAN MODE)`,
+    [mail]
   );
   const userIds: string[] = rows.map((row) => row.user_id);
 
@@ -241,19 +241,19 @@ export const getUserForFilter = async (
   let userRows: RowDataPacket[];
   if (!userId) {
     // user件数を取得し、その上でランダムに1件取得する
-    // const [userCountRows] = await pool.query<RowDataPacket[]>(
-    //   "SELECT COUNT(*) AS count FROM user"
-    // );
-    // const userCount = userCountRows[0].count;
-    // const randomOffset = Math.floor(Math.random() * userCount); 
-    [userRows] = await pool.query<RowDataPacket[]>(
-      "SET @min = (SELECT MIN(user_id) FROM user);SET @max = (SELECT MAX(user_id) FROM user);SET @rand = FLOOR(@min + (RAND() * (@max - @min)));SELECT user_id, user_name, office_id, user_icon_id FROM user WHERE user_id >= @rand LIMIT N;"
-      // "SELECT user_id, user_name, office_id, user_icon_id FROM user ORDER BY RAND() LIMIT 1"
+    const [userCountRows] = await pool.query<RowDataPacket[]>(
+      "SELECT COUNT(*) AS count FROM user"
     );
+    const userCount = userCountRows[0].count;
+    const randomOffset = Math.floor(Math.random() * userCount); 
     // [userRows] = await pool.query<RowDataPacket[]>(
-    //   "SELECT user_id, user_name, office_id, user_icon_id FROM user LIMIT 1 OFFSET ?",
-    //   [randomOffset]
+    //   "SET @min = (SELECT MIN(user_id) FROM user);SET @max = (SELECT MAX(user_id) FROM user);SET @rand = FLOOR(@min + (RAND() * (@max - @min)));SELECT user_id, user_name, office_id, user_icon_id FROM user WHERE user_id >= @rand LIMIT N;"
+    //   // "SELECT user_id, user_name, office_id, user_icon_id FROM user ORDER BY RAND() LIMIT 1"
     // );
+    [userRows] = await pool.query<RowDataPacket[]>(
+      "SELECT user_id, user_name, office_id, user_icon_id FROM user LIMIT 1 OFFSET ?",
+      [randomOffset]
+    );
   } else {
     [userRows] = await pool.query<RowDataPacket[]>(
       "SELECT user_id, user_name, office_id, user_icon_id FROM user WHERE user_id = ?",

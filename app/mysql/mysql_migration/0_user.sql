@@ -5,3 +5,6 @@ ALTER TABLE user ADD INDEX office_id_index (office_id);
 ALTER TABLE user ADD INDEX emp_index (employee_id);
 ALTER TABLE user ADD INDEX mailpass_index (mail, password);
 CREATE FULLTEXT INDEX idx_ngram_user_name ON user (user_name) WITH PARSER ngram;
+CREATE FULLTEXT INDEX idx_ngram_kana ON user (kana) WITH PARSER ngram;
+CREATE FULLTEXT INDEX idx_ngram_mail ON user (mail) WITH PARSER ngram;
+CREATE FULLTEXT INDEX idx_ngram_goal ON user (goal) WITH PARSER ngram;
