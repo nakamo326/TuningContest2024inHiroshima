@@ -1,4 +1,4 @@
-FROM node:20.0.0
+FROM node:20.11
 WORKDIR /node
 RUN mkdir -p images/user-icon
 COPY . .

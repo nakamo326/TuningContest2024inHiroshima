@@ -1,5 +1,6 @@
+import sharp from "sharp";
+import fs from "fs";
 import express from "express";
-import { execSync } from "child_process";
 import { getUsers } from "./repository";
 import { getUserByUserId } from "./repository";
 import { getFileByFileId } from "../files/repository";
@@ -30,9 +31,11 @@ usersRouter.get(
       }
       const path = userIcon.path;
       // 500px x 500pxでリサイズ
-      const data = execSync(`convert ${path} -resize 500x500! PNG:-`, {
-        shell: "/bin/bash",
-      });
+      // const data = execSync(`convert ${path} -resize 500x500! PNG:-`, {
+      //   shell: "/bin/bash",
+      // });
+      const buf = fs.readFileSync(path);
+      const data = await sharp(buf).resize(500, 500).png().toBuffer();
       res.status(200).json({
         fileName: userIcon.fileName,
         data: data.toString("base64"),
