@@ -240,20 +240,9 @@ export const getUserForFilter = async (
 ): Promise<UserForFilter> => {
   let userRows: RowDataPacket[];
   if (!userId) {
-    // user件数を取得し、その上でランダムに1件取得する
-    // const [userCountRows] = await pool.query<RowDataPacket[]>(
-    //   "SELECT COUNT(*) AS count FROM user"
-    // );
-    // const userCount = userCountRows[0].count;
-    // const randomOffset = Math.floor(Math.random() * userCount); 
     [userRows] = await pool.query<RowDataPacket[]>(
-      "SET @min = (SELECT MIN(user_id) FROM user);SET @max = (SELECT MAX(user_id) FROM user);SET @rand = FLOOR(@min + (RAND() * (@max - @min)));SELECT user_id, user_name, office_id, user_icon_id FROM user WHERE user_id >= @rand LIMIT N;"
-      // "SELECT user_id, user_name, office_id, user_icon_id FROM user ORDER BY RAND() LIMIT 1"
+      "SELECT user_id, user_name, office_id, user_icon_id FROM user ORDER BY RAND() LIMIT 1"
     );
-    // [userRows] = await pool.query<RowDataPacket[]>(
-    //   "SELECT user_id, user_name, office_id, user_icon_id FROM user LIMIT 1 OFFSET ?",
-    //   [randomOffset]
-    // );
   } else {
     [userRows] = await pool.query<RowDataPacket[]>(
       "SELECT user_id, user_name, office_id, user_icon_id FROM user WHERE user_id = ?",
