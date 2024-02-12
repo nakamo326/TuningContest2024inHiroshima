@@ -111,7 +111,7 @@ export const getUsersByUserName = async (
   userName: string
 ): Promise<SearchedUser[]> => {
   const [rows] = await pool.query<RowDataPacket[]>(
-    `SELECT user_id FROM user WHERE user_name LIKE ?`,
+    `SELECT user_id FROM user WHERE MATCH(user_name) AGAINST('?');`,
     [`%${userName}%`]
   );
   const userIds: string[] = rows.map((row) => row.user_id);
