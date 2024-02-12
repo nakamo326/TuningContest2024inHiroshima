@@ -1,6 +1,9 @@
 all:
 	bash run.sh
 
+restart:
+	cd app && bash restart_container.sh
+
 slow:
 	docker compose -f app/compose.yaml cp mysql:/tmp/slow.log .
 	mysqldumpslow slow.log > slowdump
