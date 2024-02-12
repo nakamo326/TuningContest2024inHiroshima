@@ -235,16 +235,23 @@ export const getUsersByGoal = async (goal: string): Promise<SearchedUser[]> => {
   return getUsersByUserIds(userIds);
 };
 
+let userCount: number | undefined;
+
 export const getUserForFilter = async (
   userId?: string
 ): Promise<UserForFilter> => {
   let userRows: RowDataPacket[];
   if (!userId) {
-    // const [userCountRows] = await pool.query<RowDataPacket[]>(
-    //   "SELECT COUNT(*) AS count FROM user"
-    // );
-    // const userCount = userCountRows[0].count;
-    const randomOffset = Math.floor(Math.random() * 300000);
+    if (userCount === undefined) {
+      const [userCountRows] = await pool.query<RowDataPacket[]>(
+        "SELECT COUNT(*) AS count FROM user"
+      );
+      if (userCountRows.length === 0) {
+        throw new Error("user count not found");
+      }
+      userCount = userCountRows[0].count as number;
+    }
+    const randomOffset = Math.floor(Math.random() * userCount);
     [userRows] = await pool.query<RowDataPacket[]>(
       `SELECT u.user_id, u.user_name, u.office_id, u.user_icon_id, o.office_name, f.file_name,
         d.department_name, GROUP_CONCAT(s.skill_name) AS skill_names
