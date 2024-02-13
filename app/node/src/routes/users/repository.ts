@@ -235,7 +235,7 @@ export const getUsersByGoal = async (goal: string): Promise<SearchedUser[]> => {
   return getUsersByUserIds(userIds);
 };
 
-let userCount: number | undefined;
+// let userCount: number | undefined;
 
 export const getUserForFilter = async (
   userId?: string
